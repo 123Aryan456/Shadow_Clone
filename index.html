@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Self - Web Version</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        #game-container {
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+        }
+        canvas {
+            border: 2px solid #333;
+        }
+        .loading {
+            font-size: 24px;
+            margin: 20px;
+        }
+        .controls {
+            margin: 20px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            max-width: 600px;
+        }
+        .controls h2 {
+            margin-top: 0;
+        }
+        .controls ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .controls li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shadow Self</h1>
+    <div id="game-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading">Loading game...</div>
+    </div>
+    <div class="controls">
+        <h2>Controls</h2>
+        <ul>
+            <li>WASD or Arrow Keys - Move</li>
+            <li>SPACE - Shoot</li>
+            <li>SHIFT - Dash</li>
+            <li>P - Pause</li>
+            <li>M - Toggle Sound</li>
+            <li>1-4 - Select Upgrades</li>
+        </ul>
+    </div>
+    <script src="pygbag.js"></script>
+    <script>
+        // Initialize Pygbag
+        async function init() {
+            let pygbag = await import("./pygbag.js");
+            await pygbag.load("Shadow.py");
+        }
+        init().catch(console.error);
+    </script>
+</body>
+</html> 
