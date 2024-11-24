@@ -255,7 +255,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += dy * 5
         
     def shoot(self):
-        # Create multiple projectiles in a spread pattern
+        if hasattr(self.game, 'sounds') and 'shoot' in self.game.sounds:
+            self.game.sounds['shoot'].play()
         angles = [-10, 0, 10] if self.energy >= 60 else [0]
         for angle in angles:
             projectile = Projectile(self.rect.centerx, self.rect.centery, 1, angle)
@@ -422,6 +423,32 @@ class Game:
         ]
         self.tutorial_index = 0
         self.show_tutorial = True
+        
+        # Initialize sound system
+        if not os.path.exists("sounds"):
+            os.makedirs("sounds")
+            
+        # Load sounds with error handling
+        self.sounds = {}
+        try:
+            self.sounds = {
+                'shoot': pygame.mixer.Sound('sounds/shoot.wav'),
+                'hit': pygame.mixer.Sound('sounds/hit.wav'),
+                'powerup': pygame.mixer.Sound('sounds/powerup.wav'),
+                'explosion': pygame.mixer.Sound('sounds/explosion.wav')
+            }
+            
+            # Set volume for sound effects
+            for sound in self.sounds.values():
+                sound.set_volume(0.3)  # 30% volume
+                
+            # Load and play background music
+            pygame.mixer.music.load('sounds/background.wav')
+            pygame.mixer.music.set_volume(0.5)  # 50% volume
+            pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+            
+        except Exception as e:
+            print(f"Error loading sounds: {e}")
 
     def load_high_score(self):
         try:
@@ -535,6 +562,8 @@ class Game:
                 # Progress tutorial on spacebar
                 if event.key == pygame.K_SPACE and self.show_tutorial:
                     self.tutorial_index = min(self.tutorial_index + 1, len(self.tutorial_messages) - 1)
+                if event.key == pygame.K_m:  # 'M' key toggles sound
+                    self.toggle_sound()
         
         # Update
         self.all_sprites.update()
@@ -579,6 +608,8 @@ class Game:
         # Projectile collisions
         for projectile in self.player.projectiles:
             if pygame.sprite.collide_rect(projectile, self.shadow):
+                if 'hit' in self.sounds:
+                    self.sounds['hit'].play()
                 damage = 10 * self.player.damage_multiplier
                 self.shadow.health -= damage
                 self.create_explosion(projectile.rect.centerx, projectile.rect.centery)
@@ -599,6 +630,8 @@ class Game:
         
         # Power-up collisions
         for powerup in pygame.sprite.spritecollide(self.player, self.powerups, True):
+            if 'powerup' in self.sounds:
+                self.sounds['powerup'].play()
             if powerup.type == "health":
                 self.player.health = min(self.player.max_health, self.player.health + 30)
             elif powerup.type == "energy":
@@ -815,7 +848,28 @@ class Game:
             self.particles.add(particle)
 
     def create_explosion(self, x, y):
+        if 'explosion' in self.sounds:
+            self.sounds['explosion'].play()
         self.explosions.add(Explosion(x, y))
+
+    def set_volume(self, volume):
+        """Set volume for all sounds (0.0 to 1.0)"""
+        try:
+            for sound in self.sounds.values():
+                sound.set_volume(volume)
+            pygame.mixer.music.set_volume(volume)
+        except:
+            pass
+
+    def toggle_sound(self):
+        """Toggle all game sounds on/off"""
+        try:
+            if pygame.mixer.music.get_volume() > 0:
+                self.set_volume(0.0)
+            else:
+                self.set_volume(0.5)
+        except:
+            pass
 
 def create_game_sprites():
     """Create and save all game sprites"""
