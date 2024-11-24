@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shadow Self - Web Version</title>
+    <title>Shadow Self</title>
     <style>
         body {
             margin: 0;
@@ -18,16 +18,15 @@
             color: white;
         }
         #game-container {
+            position: relative;
             width: 800px;
             height: 600px;
             margin: 20px auto;
         }
-        canvas {
+        #game {
             border: 2px solid #333;
-        }
-        .loading {
-            font-size: 24px;
-            margin: 20px;
+            width: 100%;
+            height: 100%;
         }
         .controls {
             margin: 20px;
@@ -36,24 +35,35 @@
             border-radius: 10px;
             max-width: 600px;
         }
-        .controls h2 {
-            margin-top: 0;
+        .github-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-decoration: none;
         }
-        .controls ul {
-            list-style-type: none;
-            padding: 0;
+        .github-link:hover {
+            text-decoration: underline;
         }
-        .controls li {
-            margin: 10px 0;
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: white;
         }
     </style>
 </head>
 <body>
+    <a href="https://github.com/123Aryan456/Shadow_Clone" class="github-link">View on GitHub</a>
+    
     <h1>Shadow Self</h1>
     <div id="game-container">
-        <canvas id="canvas"></canvas>
+        <canvas id="game" width="800" height="600"></canvas>
         <div class="loading">Loading game...</div>
     </div>
+    
     <div class="controls">
         <h2>Controls</h2>
         <ul>
@@ -65,14 +75,47 @@
             <li>1-4 - Select Upgrades</li>
         </ul>
     </div>
-    <script src="pygbag.js"></script>
+
+    <div class="description">
+        <h2>About the Game</h2>
+        <p>Shadow Self is a fast-paced action game where you fight against your own shadow. 
+           Dodge attacks, collect power-ups, and upgrade your abilities to defeat increasingly challenging versions of yourself.</p>
+        
+        <h3>Features:</h3>
+        <ul>
+            <li>Multiple levels with increasing difficulty</li>
+            <li>Power-up system</li>
+            <li>Upgrade mechanics</li>
+            <li>Dynamic combat system</li>
+            <li>Screen shake and particle effects</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>Created by <a href="https://github.com/123Aryan456" style="color: white;">123Aryan456</a></p>
+        <p>Play the desktop version: Download from the <a href="https://github.com/123Aryan456/Shadow_Clone/releases" style="color: white;">releases page</a></p>
+    </footer>
+
     <script>
-        // Initialize Pygbag
-        async function init() {
-            let pygbag = await import("./pygbag.js");
-            await pygbag.load("Shadow.py");
-        }
-        init().catch(console.error);
+        window.addEventListener('load', function() {
+            const canvas = document.getElementById('game');
+            const loadingText = document.querySelector('.loading');
+            
+            // Check if running on GitHub Pages
+            const isGitHubPages = window.location.hostname.includes('github.io');
+            const basePath = isGitHubPages ? '/Shadow_Clone' : '';
+            
+            // Load the game script
+            const script = document.createElement('script');
+            script.src = `${basePath}/Shadow.js`;
+            script.onerror = function() {
+                loadingText.textContent = 'Error loading game. Please try the desktop version.';
+            };
+            script.onload = function() {
+                loadingText.style.display = 'none';
+            };
+            document.body.appendChild(script);
+        });
     </script>
 </body>
 </html> 
