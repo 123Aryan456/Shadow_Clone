@@ -29,4 +29,4 @@ A fast-paced action game where you fight against your own shadow. Built with Pyg
 
 ## 🚀 Installation
 
-1. Clone the repository: 
+1. Clone the repository
